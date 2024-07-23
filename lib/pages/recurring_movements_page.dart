@@ -5,6 +5,7 @@ import '../widgets/recurring_movements_card.dart';
 
 class RecurringMovements extends StatelessWidget {
   static const String id = "recurring_movements_page";
+
   const RecurringMovements({super.key});
 
   @override
@@ -50,7 +51,10 @@ class RecurringMovements extends StatelessWidget {
           Navigator.pushNamed(context, AddRecurringMovementPage.id);
         },
         tooltip: 'Agregar movimiento recurrente',
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

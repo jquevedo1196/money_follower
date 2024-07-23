@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:money_follower/enums/recurring_movement_type.dart';
 
 class AddRecurringMovementPage extends StatelessWidget {
   static const String id = "add_recurring_movements_page";
+
   const AddRecurringMovementPage({super.key});
 
   @override
@@ -16,31 +18,27 @@ class AddRecurringMovementPage extends StatelessWidget {
           'Agregar movimiento recurrente',
         ),
       ),
-      body: FormExample(),
+      body: AddMovementForm(),
     );
   }
 }
 
-class FormExample extends StatefulWidget {
-  const FormExample({super.key});
+class AddMovementForm extends StatefulWidget {
+  const AddMovementForm({super.key});
 
   @override
-  State<FormExample> createState() => _FormExampleState();
+  State<AddMovementForm> createState() => _AddMovementFormState();
 }
 
-class _FormExampleState extends State<FormExample> {
+class _AddMovementFormState extends State<AddMovementForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _name = ''; // Variable to store the entered name
-  String _email = ''; // Variable to store the entered email
+  String _name = '';
+  String _email = '';
 
   void _submitForm() {
-    // Check if the form is valid
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save(); // Save the form data
-      // You can perform actions with the form data here and extract the details
-      print('Name: $_name'); // Print the name
-      print('Email: $_email'); // Print the email
+      _formKey.currentState!.save();
     }
   }
 
@@ -49,11 +47,41 @@ class _FormExampleState extends State<FormExample> {
     return Form(
       key: _formKey, // Associate the form key with this Form widget
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
+            Row(
+              children: [
+                Expanded(
+                  flex: 100,
+                  child: DropdownMenu<RecurringMovementType>(
+                    expandedInsets: EdgeInsets.zero,
+                    enableSearch: false,
+                    enableFilter: false,
+                    errorText: "Valor no valido",
+                    initialSelection: RecurringMovementType.outbound,
+                    label: const Text('Tipo de movimiento'),
+                    requestFocusOnTap: true,
+                    dropdownMenuEntries: RecurringMovementType.values
+                        .map<DropdownMenuEntry<RecurringMovementType>>(
+                            (RecurringMovementType movementType) {
+                      return DropdownMenuEntry<RecurringMovementType>(
+                        value: movementType,
+                        label: movementType.label,
+                      );
+                    }).toList(),
+                    onSelected: (element) {
+                      setState(() {
+
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Name'), // Label for the name field
+              decoration: const InputDecoration(labelText: 'Name'),
+              // Label for the name field
               validator: (value) {
                 // Validation function for the name field
                 if (value!.isEmpty) {
@@ -66,7 +94,8 @@ class _FormExampleState extends State<FormExample> {
               },
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Email'), // Label for the email field
+              decoration: const InputDecoration(labelText: 'Email'),
+              // Label for the email field
               validator: (value) {
                 // Validation function for the email field
                 if (value!.isEmpty) {
@@ -79,10 +108,14 @@ class _FormExampleState extends State<FormExample> {
                 _email = value!; // Save the entered email
               },
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: _submitForm, // Call the _submitForm function when the button is pressed
-              child: Text('Submit'), // Text on the button
+              onPressed: _submitForm,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              child: const Text(
+                'Agregar',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
