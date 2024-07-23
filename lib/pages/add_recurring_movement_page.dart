@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:money_follower/enums/recurring_movement_type.dart';
 
 class AddRecurringMovementPage extends StatelessWidget {
@@ -45,52 +47,39 @@ class _AddMovementFormState extends State<AddMovementForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey, // Associate the form key with this Form widget
+      key: _formKey,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            Row(
-              children: [
-                Expanded(
-                  flex: 100,
-                  child: DropdownMenu<RecurringMovementType>(
-                    expandedInsets: EdgeInsets.zero,
-                    enableSearch: false,
-                    enableFilter: false,
-                    errorText: "Valor no valido",
-                    initialSelection: RecurringMovementType.outbound,
-                    label: const Text('Tipo de movimiento'),
-                    requestFocusOnTap: true,
-                    dropdownMenuEntries: RecurringMovementType.values
-                        .map<DropdownMenuEntry<RecurringMovementType>>(
-                            (RecurringMovementType movementType) {
-                      return DropdownMenuEntry<RecurringMovementType>(
-                        value: movementType,
-                        label: movementType.label,
-                      );
-                    }).toList(),
-                    onSelected: (element) {
-                      setState(() {
-
-                      });
-                    },
-                  ),
-                ),
-              ],
+            RecurringMovementsForm(context),
+            DropdownMenu<RecurringMovementType>(
+              expandedInsets: EdgeInsets.zero,
+              enableSearch: false,
+              enableFilter: false,
+              errorText: "Valor no valido",
+              initialSelection: RecurringMovementType.outbound,
+              label: const Text('Tipo de movimiento'),
+              requestFocusOnTap: true,
+              dropdownMenuEntries: RecurringMovementType.values
+                  .map<DropdownMenuEntry<RecurringMovementType>>(
+                      (RecurringMovementType movementType) {
+                return DropdownMenuEntry<RecurringMovementType>(
+                  value: movementType,
+                  label: movementType.label,
+                );
+              }).toList(),
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: 'Name'),
-              // Label for the name field
               validator: (value) {
-                // Validation function for the name field
                 if (value!.isEmpty) {
-                  return 'Please enter your name.'; // Return an error message if the name is empty
+                  return 'Please enter your name.';
                 }
-                return null; // Return null if the name is valid
+                return null;
               },
               onSaved: (value) {
-                _name = value!; // Save the entered name
+                _name = value!;
               },
             ),
             TextFormField(
@@ -99,13 +88,12 @@ class _AddMovementFormState extends State<AddMovementForm> {
               validator: (value) {
                 // Validation function for the email field
                 if (value!.isEmpty) {
-                  return 'Please enter your email.'; // Return an error message if the email is empty
+                  return 'Please enter your email.';
                 }
-                // You can add more complex validation logic here
-                return null; // Return null if the email is valid
+                return null;
               },
               onSaved: (value) {
-                _email = value!; // Save the entered email
+                _email = value!;
               },
             ),
             const SizedBox(height: 20.0),
@@ -122,4 +110,65 @@ class _AddMovementFormState extends State<AddMovementForm> {
       ),
     );
   }
+}
+
+FormBuilder RecurringMovementsForm(BuildContext context) {
+  final _formKey = GlobalKey<FormBuilderState>();
+  final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
+
+  List<DropdownMenuItem> values = RecurringMovementType.values
+      .map<DropdownMenuItem<RecurringMovementType>>(
+          (RecurringMovementType movementType) {
+        return DropdownMenuItem<RecurringMovementType>(
+          value: movementType,
+          child: Text(movementType.label),
+        );
+      }).toList();
+
+  return FormBuilder(
+    key: _formKey,
+    child: Column(
+      children: [
+        FormBuilderDropdown(
+          name: 'movement_type',
+          items: values,
+        ),
+        FormBuilderTextField(
+          key: _emailFieldKey,
+          name: 'email',
+          decoration: const InputDecoration(labelText: 'Email'),
+          validator: FormBuilderValidators.compose([
+            FormBuilderValidators.required(),
+            FormBuilderValidators.email(),
+          ]),
+        ),
+        const SizedBox(height: 10),
+        Visibility(
+          visible: false,
+          child: FormBuilderTextField(
+            name: 'password',
+            enabled: false,
+            decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: true,
+            validator: FormBuilderValidators.compose([
+              FormBuilderValidators.required(),
+            ]),
+          ),
+        ),
+        MaterialButton(
+          color: Theme.of(context).colorScheme.secondary,
+          onPressed: () {
+            // Validate and save the form values
+            _formKey.currentState?.saveAndValidate();
+            debugPrint(_formKey.currentState?.value.toString());
+
+            // On another side, can access all field values without saving form with instantValues
+            _formKey.currentState?.validate();
+            debugPrint(_formKey.currentState?.instantValue.toString());
+          },
+          child: const Text('Login'),
+        )
+      ],
+    ),
+  );
 }
