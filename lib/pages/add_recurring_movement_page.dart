@@ -3,6 +3,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:money_follower/enums/recurring_movement_type.dart';
 
+const String required = "Este campo es obligatorio";
+
 class AddRecurringMovementPage extends StatelessWidget {
   static const String id = "add_recurring_movements_page";
 
@@ -20,7 +22,7 @@ class AddRecurringMovementPage extends StatelessWidget {
           'Agregar movimiento recurrente',
         ),
       ),
-      body: AddMovementForm(),
+      body: const AddMovementForm(),
     );
   }
 }
@@ -33,142 +35,100 @@ class AddMovementForm extends StatefulWidget {
 }
 
 class _AddMovementFormState extends State<AddMovementForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _outerFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormBuilderState> _innerFormKey =
+      GlobalKey<FormBuilderState>();
+  bool _visibility = true;
 
-  String _name = '';
-  String _email = '';
+  void _updateForm(bool newValue) {
+    setState(() {
+      _visibility = newValue;
+    });
+  }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-    }
+  List<DropdownMenuItem<RecurringMovementType>> _buildDropdownItems() {
+    return RecurringMovementType.values
+        .map<DropdownMenuItem<RecurringMovementType>>(
+            (RecurringMovementType movementType) {
+      return DropdownMenuItem<RecurringMovementType>(
+        value: movementType,
+        child: Text(movementType.label),
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: _outerFormKey,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            RecurringMovementsForm(context),
-            DropdownMenu<RecurringMovementType>(
-              expandedInsets: EdgeInsets.zero,
-              enableSearch: false,
-              enableFilter: false,
-              errorText: "Valor no valido",
-              initialSelection: RecurringMovementType.outbound,
-              label: const Text('Tipo de movimiento'),
-              requestFocusOnTap: true,
-              dropdownMenuEntries: RecurringMovementType.values
-                  .map<DropdownMenuEntry<RecurringMovementType>>(
-                      (RecurringMovementType movementType) {
-                return DropdownMenuEntry<RecurringMovementType>(
-                  value: movementType,
-                  label: movementType.label,
-                );
-              }).toList(),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Name'),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter your name.';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _name = value!;
-              },
-            ),
-            TextFormField(
+            recurringMovementsForm(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  FormBuilder recurringMovementsForm() {
+    return FormBuilder(
+      key: _innerFormKey,
+      child: Column(
+        children: [
+          FormBuilderDropdown(
+            name: 'movement_type',
+            items: _buildDropdownItems(),
+            isExpanded: true,
+            initialValue: RecurringMovementType.income,
+            onChanged: (selection) {
+              _updateForm(selection == RecurringMovementType.income);
+            },
+          ),
+          Visibility(
+            visible: _visibility,
+            child: FormBuilderTextField(
+              name: 'email',
               decoration: const InputDecoration(labelText: 'Email'),
-              // Label for the email field
-              validator: (value) {
-                // Validation function for the email field
-                if (value!.isEmpty) {
-                  return 'Please enter your email.';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _email = value!;
-              },
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(errorText: required),
+                FormBuilderValidators.email(
+                    errorText: "Debe ser un correo válido"),
+              ]),
             ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: _submitForm,
+          ),
+          const SizedBox(height: 10),
+          Visibility(
+            visible: _visibility,
+            child: FormBuilderTextField(
+              name: 'password',
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(errorText: required),
+              ]),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: ElevatedButton(
+              onPressed: () {
+                if (_innerFormKey.currentState?.saveAndValidate() ?? false) {
+                  debugPrint(_innerFormKey.currentState?.value.toString());
+                } else {
+                  debugPrint("Validation failed");
+                }
+              },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               child: const Text(
                 'Agregar',
                 style: TextStyle(color: Colors.white),
               ),
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
-}
-
-FormBuilder RecurringMovementsForm(BuildContext context) {
-  final _formKey = GlobalKey<FormBuilderState>();
-  final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
-
-  List<DropdownMenuItem> values = RecurringMovementType.values
-      .map<DropdownMenuItem<RecurringMovementType>>(
-          (RecurringMovementType movementType) {
-        return DropdownMenuItem<RecurringMovementType>(
-          value: movementType,
-          child: Text(movementType.label),
-        );
-      }).toList();
-
-  return FormBuilder(
-    key: _formKey,
-    child: Column(
-      children: [
-        FormBuilderDropdown(
-          name: 'movement_type',
-          items: values,
-        ),
-        FormBuilderTextField(
-          key: _emailFieldKey,
-          name: 'email',
-          decoration: const InputDecoration(labelText: 'Email'),
-          validator: FormBuilderValidators.compose([
-            FormBuilderValidators.required(),
-            FormBuilderValidators.email(),
-          ]),
-        ),
-        const SizedBox(height: 10),
-        Visibility(
-          visible: false,
-          child: FormBuilderTextField(
-            name: 'password',
-            enabled: false,
-            decoration: const InputDecoration(labelText: 'Password'),
-            obscureText: true,
-            validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required(),
-            ]),
-          ),
-        ),
-        MaterialButton(
-          color: Theme.of(context).colorScheme.secondary,
-          onPressed: () {
-            // Validate and save the form values
-            _formKey.currentState?.saveAndValidate();
-            debugPrint(_formKey.currentState?.value.toString());
-
-            // On another side, can access all field values without saving form with instantValues
-            _formKey.currentState?.validate();
-            debugPrint(_formKey.currentState?.instantValue.toString());
-          },
-          child: const Text('Login'),
-        )
-      ],
-    ),
-  );
 }
