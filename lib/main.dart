@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money_follower/pages/add_recurring_movement_page.dart';
-import 'package:money_follower/pages/recurring_movements_page.dart';
+import 'package:money_follower/pages/recurring_movements_page/add_recurring_movement_page.dart';
+import 'package:money_follower/pages/recurring_movements_page/recurring_movements_page.dart';
 
 void main() => runApp(const MoneyFollowerApp());
 
