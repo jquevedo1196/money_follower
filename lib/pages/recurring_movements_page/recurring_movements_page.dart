@@ -23,7 +23,7 @@ class RecurringMovements extends StatelessWidget {
         child: Container(
           decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(20))),
+              borderRadius: BorderRadius.all(Radius.circular(15))),
           child: ListView(
             children: const [
               RecurringMovementsCard(
