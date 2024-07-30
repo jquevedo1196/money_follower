@@ -13,7 +13,7 @@ class RecurringMovements extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Movimientos recurrentes',
+          'Movimientos',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.lightBlue,

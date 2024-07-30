@@ -23,7 +23,7 @@ class AddRecurringMovementPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Agregar movimiento recurrente',
+          'Agregar movimiento',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.lightBlue,
@@ -76,7 +76,7 @@ class _AddMovementFormState extends State<AddMovementForm> {
         children: [
           _buildDropdownField<MovementType>(
             name: 'movement_type',
-            label: 'Tipo de movimiento recurrente',
+            label: 'Tipo de movimiento',
             items: _buildDropdownItems<MovementType>(
                 MovementType.values, (MovementType type) => type.label),
           ),
