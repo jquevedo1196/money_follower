@@ -6,7 +6,7 @@ class RecurringMovementsCard extends StatelessWidget {
   final String desc;
   final IconData icon;
   final String savingType;
-  final double amount;
+  final num amount;
 
   const RecurringMovementsCard(
       {super.key,
@@ -42,7 +42,7 @@ class RecurringMovementsCard extends StatelessWidget {
         title: Text(title),
         subtitle: Text(desc),
         trailing: AutoSizeText(
-          formatAmount(amount),
+          formatAmount(amount.toDouble()),
           style: const TextStyle(fontSize: 18),
           minFontSize: 18,
           maxLines: 1,

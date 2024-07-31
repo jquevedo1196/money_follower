@@ -1,14 +1,14 @@
 import 'package:money_follower/enums/recurring_movement_type.dart';
 import '../enums/frequency_type.dart';
 
-class Payment {
+class PaymentModel {
   final int id;
   final MovementType movementType;
   final String name;
-  final double amount;
+  final num amount;
   final FrequencyType frequencyType;
 
-  const Payment({
+  const PaymentModel({
     required this.id,
     required this.movementType,
     required this.name,
@@ -18,7 +18,6 @@ class Payment {
 
   Map<String, Object?> toMap() {
     return {
-      'id': id,
       'movementType': movementType.name,
       'name': name,
       'amount': amount,

@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:money_follower/data/payments_data.dart';
 import 'package:money_follower/enums/recurring_movement_type.dart';
+import 'package:money_follower/models/payments_model.dart';
 import '../../enums/frequency_type.dart';
 
 const String required = "Este campo es obligatorio";
@@ -128,9 +132,31 @@ class _AddMovementFormState extends State<AddMovementForm> {
   void _onSubmit() {
     if (_innerFormKey.currentState?.saveAndValidate() ?? false) {
       debugPrint(_innerFormKey.currentState?.value.toString());
+      PaymentsData().insertPayment(fromMap(_innerFormKey.currentState));
     } else {
       debugPrint("Validation failed");
     }
+  }
+
+  PaymentModel fromMap(FormBuilderState? state) {
+    Map<String, dynamic>? value = state?.value;
+    MovementType movementType = value?["movement_type"];
+    FrequencyType frequencyType = value?["frequency"];
+    double amount = truncate(double.parse(value?["amount"]), 2);
+
+    PaymentModel newPayment = PaymentModel(
+        id: 1,
+        movementType: movementType,
+        name: value?["name"],
+        amount: amount,
+        frequencyType: frequencyType);
+
+    return newPayment;
+  }
+
+  double truncate(double val, int fractionDigits) {
+    var mod = pow(10.0, fractionDigits).toDouble();
+    return ((val * mod).round().toDouble() / mod);
   }
 
   FormBuilderTextField _buildTextField({

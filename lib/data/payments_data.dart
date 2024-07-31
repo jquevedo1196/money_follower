@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import '../models/payments_model.dart';
 
 class PaymentsData {
-  Future<void> insertPayment(Payment payment) async {
+  Future<void> insertPayment(PaymentModel payment) async {
     final db = await openDatabase('money_follower.db');
     await db.insert(
       'payments',
@@ -32,20 +32,20 @@ class PaymentsData {
     );
   }
 
-  Future<List<Payment>> getAllPayments() async {
+  Future<List<PaymentModel>> getAllPayments() async {
     final db = await openDatabase('money_follower.db');
     final List<Map<String, Object?>> paymentsMaps = await db.query('payments');
-    List<Payment> allPayments = [];
+    List<PaymentModel> allPayments = [];
     for (final {
           'id': id as int,
           'name': name as String,
-          'amount': amount as double,
+          'amount': amount as num,
           'frequencyType': frequencyType as String,
           'movementType': movementType as String,
         } in paymentsMaps) {
       FrequencyType.values.toString();
       MovementType.values.toString();
-      allPayments.add(Payment(
+      allPayments.add(PaymentModel(
           id: id,
           name: name,
           amount: amount,

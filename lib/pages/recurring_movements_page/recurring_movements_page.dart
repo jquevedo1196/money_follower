@@ -1,12 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:money_follower/data/payments_data.dart';
+import 'package:money_follower/models/payments_model.dart';
 import 'package:money_follower/pages/recurring_movements_page/add_recurring_movement_page.dart';
-
 import 'widgets/recurring_movements_card.dart';
 
-class RecurringMovements extends StatelessWidget {
+class RecurringMovements extends StatefulWidget {
   static const String id = "recurring_movements_page";
 
   const RecurringMovements({super.key});
+
+  @override
+  State<RecurringMovements> createState() => _RecurringMovementsState();
+}
+
+class _RecurringMovementsState extends State<RecurringMovements> {
+  List<PaymentModel> _payments = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<List<PaymentModel>> _allPayments() async {
+    _payments = await PaymentsData().getAllPayments();
+    print(_payments);
+    return _payments;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,36 +43,46 @@ class RecurringMovements extends StatelessWidget {
           decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(15))),
-          child: ListView(
-            children: const [
-              RecurringMovementsCard(
-                  title: "Sueldo",
-                  desc: "Pago quincenal",
-                  icon: Icons.savings,
-                  savingType: "income",
-                  amount: 90000.50),
-              RecurringMovementsCard(
-                title: "Renta",
-                desc: "Pago mensual",
-                icon: Icons.payments,
-                savingType: "outbound",
-                amount: 15000.00,
-              ),
-              RecurringMovementsCard(
-                title: "Mensualidad Casa",
-                desc: "Pago mensual",
-                icon: Icons.payments,
-                savingType: "outbound",
-                amount: 11000.25,
-              ),
-              RecurringMovementsCard(
-                title: "Mensualidad Carro",
-                desc: "Pago mensual",
-                icon: Icons.payments,
-                savingType: "outbound",
-                amount: 10000.15,
-              ),
-            ],
+          child: FutureBuilder<List<PaymentModel>>(
+            future: _allPayments(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<PaymentModel>> snapshot) {
+              List<Widget> children;
+              if (snapshot.hasData) {
+                print(snapshot.data);
+                return ListView(children: movements(payments: snapshot.data!));
+              } else if (snapshot.hasError) {
+                children = <Widget>[
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Text('Error: ${snapshot.error}'),
+                  ),
+                ];
+              } else {
+                children = const <Widget>[
+                  SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text('Awaiting result...'),
+                  ),
+                ];
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: children,
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -70,4 +99,19 @@ class RecurringMovements extends StatelessWidget {
       ),
     );
   }
+}
+
+List<RecurringMovementsCard> movements({required List<PaymentModel> payments}) {
+  List<RecurringMovementsCard> cards = [];
+
+  for (PaymentModel payment in payments) {
+    cards.add(RecurringMovementsCard(
+        title: payment.name,
+        desc: payment.frequencyType.label,
+        icon: payment.movementType.icon,
+        savingType: payment.movementType.name,
+        amount: payment.amount));
+  }
+
+  return cards;
 }
