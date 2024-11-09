@@ -4,16 +4,16 @@ import 'package:money_follower/models/payments_model.dart';
 import 'package:money_follower/pages/recurring_movements_page/add_recurring_movement_page.dart';
 import 'widgets/recurring_movements_card.dart';
 
-class RecurringMovements extends StatefulWidget {
+class RecurringMovementsPage extends StatefulWidget {
   static const String id = "recurring_movements_page";
 
-  const RecurringMovements({super.key});
+  const RecurringMovementsPage({super.key});
 
   @override
-  State<RecurringMovements> createState() => _RecurringMovementsState();
+  State<RecurringMovementsPage> createState() => _RecurringMovementsPageState();
 }
 
-class _RecurringMovementsState extends State<RecurringMovements> {
+class _RecurringMovementsPageState extends State<RecurringMovementsPage> {
   List<PaymentModel> _payments = [];
 
   @override
@@ -49,7 +49,6 @@ class _RecurringMovementsState extends State<RecurringMovements> {
                 AsyncSnapshot<List<PaymentModel>> snapshot) {
               List<Widget> children;
               if (snapshot.hasData) {
-                print(snapshot.data);
                 return ListView(children: movements(payments: snapshot.data!));
               } else if (snapshot.hasError) {
                 children = <Widget>[

@@ -48,6 +48,9 @@ class RecurringMovementsCard extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        onTap: () => {
+          debugPrint("Hola")
+        },
       ),
     );
   }

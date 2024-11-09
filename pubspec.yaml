@@ -40,6 +40,8 @@ dependencies:
   form_builder_validators: ^11.0.0
   sqflite: ^2.3.3+1
   path: ^1.9.0
+  quickalert: ^1.1.0
+  data_table_2: ^2.5.15
 
 
 dev_dependencies:

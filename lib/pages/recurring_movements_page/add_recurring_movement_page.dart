@@ -6,6 +6,9 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:money_follower/data/payments_data.dart';
 import 'package:money_follower/enums/recurring_movement_type.dart';
 import 'package:money_follower/models/payments_model.dart';
+import 'package:money_follower/pages/recurring_movements_page/recurring_movements_page.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import '../../enums/frequency_type.dart';
 
 const String required = "Este campo es obligatorio";
@@ -133,6 +136,15 @@ class _AddMovementFormState extends State<AddMovementForm> {
     if (_innerFormKey.currentState?.saveAndValidate() ?? false) {
       debugPrint(_innerFormKey.currentState?.value.toString());
       PaymentsData().insertPayment(fromMap(_innerFormKey.currentState));
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        title: "Exitoso",
+        text: 'Movimiento agregado correctamente!',
+        showConfirmBtn: true,
+        confirmBtnText: "Aceptar",
+        onConfirmBtnTap: () => Navigator.pushNamed(context, RecurringMovementsPage.id),
+      );
     } else {
       debugPrint("Validation failed");
     }

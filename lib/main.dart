@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_follower/pages/budget_config_page/budget_config_page.dart';
 import 'package:money_follower/pages/recurring_movements_page/add_recurring_movement_page.dart';
 import 'package:money_follower/pages/recurring_movements_page/recurring_movements_page.dart';
 import 'package:path/path.dart';
@@ -11,13 +12,12 @@ Future<void> main() async {
     onCreate: (db, version) {
       return db.execute(
         '''
-        DROP TABLE payments;
         CREATE TABLE IF NOT EXISTS payments( 
         id INTEGER PRIMARY KEY AUTOINCREMENT, 
         movementType TEXT, 
         name TEXT, 
         amount INTEGER,
-        frequencyType TEXT;
+        frequencyType TEXT
         )''',
       );
     },
@@ -40,9 +40,10 @@ class MoneyFollowerApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      initialRoute: RecurringMovements.id,
+      initialRoute: BudgetConfigPage.id,
       routes: {
-        RecurringMovements.id: (context) => const RecurringMovements(),
+        BudgetConfigPage.id: (context) => const BudgetConfigPage(),
+        RecurringMovementsPage.id: (context) => const RecurringMovementsPage(),
         AddRecurringMovementPage.id: (context) =>
         const AddRecurringMovementPage(),
       },
