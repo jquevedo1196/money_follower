@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:money_follower/pages/budget_config_page/budget_config_page.dart';
 import 'package:money_follower/pages/recurring_movements_page/add_recurring_movement_page.dart';
 import 'package:money_follower/pages/recurring_movements_page/recurring_movements_page.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
+  // make flutter draw behind navigation bar
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   openDatabase(
     join(await getDatabasesPath(), 'money_follower.db'),
     onCreate: (db, version) {
